@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Biblioteca de Prompts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.4;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #161614;
+      color: #e5e7eb;
+    }
+
+    body.light {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    body.light .app,
+    body.light .main,
+    body.light .content {
+      background: #f9fafb;
+    }
+
+    body.light .sidebar {
+      background: #e5e7eb;
+      border-right-color: #d1d5db;
+      box-shadow: 2px 0 6px rgba(0, 0, 0, 0.06);
+    }
+
+    body.light .topbar {
+      background: #ffffff;
+      border-bottom-color: #e5e7eb;
+    }
+
+    body.light .sidebar-title,
+    body.light .folder-item,
+    body.light .card-header,
+    body.light .content-header {
+      color: #111827;
+    }
+
+    body.light .card {
+      background: #ffffff;
+      border-color: #e5e7eb;
+    }
+
+    body.light .card-body {
+      color: #374151;
+    }
+
+    
+    body.light body.light .icon-btn {
+      background: #f9fafb;
+      border-color: #d1d5db;
+      color: #111827;
+    }
+
+    body.light .icon-btn:hover {
+      background: #e5e7eb;
+      border-color: #cbd5f5;
+    }
+    body.light .search-wrapper {
+      background: #f9fafb;
+      border-color: #d1d5db;
+    }
+
+    body.light .search-input {
+      color: #111827;
+    }
+
+    body.light .search-input::placeholder {
+      color: #9ca3af;
+    }
+
+    body.light .topbar-icon-btn,
+    body.light .btn-ghost {
+      background: #f9fafb;
+      border-color: #d1d5db;
+      color: #111827;
+    }
+
+    body.light .sidebar-footer {
+      color: #6b7280;
+    }
+
+    /* Botón principal en modo claro sin sombra */
+    body.light .btn-primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #f9fafb;
+      box-shadow: none;
+      transform: none;
+    }
+
+    body.light .btn-primary:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* Hover de carpeta en modo claro: gris suave, texto legible */
+    body.light .folder-item:hover {
+      background: #d1d5db;
+    }
+
+    body.light .folder-item.active {
+      background: #cbd5f5;
+      color: #111827;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+      background: #161614;
+      transition: background 0.2s ease;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar {
+      width: 260px;
+      background: #131311;
+      border-right: 1px solid #1f201d;
+      padding: 12px 10px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 0 4px;
+    }
+
+    .sidebar-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .sidebar-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .icon-btn {
+      border-radius: 999px;
+      border: 1px solid #70716e;
+      background: #1f201d;
+      color: #e5e7eb;
+      font-size: 0.98rem;
+      padding: 3px 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      min-height: 24px;
+      transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.12s ease, border-color 0.15s ease;
+    }
+
+    .icon-btn:hover {
+      background: #232520;
+      border-color: #9a9a9a;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .icon-btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .folder-list {
+      list-style: none;
+      margin: 0;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .folder-item {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      padding: 2px 2px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      color: #e5e7eb;
+    }
+
+    .folder-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .folder-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #6366f1;
+      flex-shrink: 0;
+    }
+
+    .folder-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .folder-item-buttons {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .folder-item-buttons button {
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 0 2px;
+      transition: color 0.15s ease;
+    }
+
+    .folder-item-buttons button:hover {
+      color: #e5e7eb;
+    }
+
+    .sidebar-footer {
+      margin-top: 4px;
+      padding: 4px 4px 0;
+      font-size: 0.82rem;
+      color: #6b7280;
+    }
+
+    /* MAIN AREA */
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: #161614;
+      transition: background 0.2s ease;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-bottom: 1px solid #1f201d;
+      background: #161614;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .search-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1f201d;
+      border-radius: 999px;
+      border: 1px solid #70716e;
+      padding: 6px 10px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .search-wrapper span {
+      font-size: 0.98rem;
+      color: #6b7280;
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: #e5e7eb;
+      font-size: 0.98rem;
+      outline: none;
+      min-width: 0;
+    }
+
+    .search-input::placeholder {
+      color: #6b7280;
+    }
+
+    .search-clear-btn {
+      visibility: hidden;
+      border: none;
+      background: transparent;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 1.05rem;
+      padding: 0 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      min-height: 20px;
+      border-radius: 999px;
+      transition: color 0.12s ease, background 0.12s ease, transform 0.1s ease;
+    }
+
+    .search-clear-btn:hover {
+      background: rgba(148, 163, 184, 0.2);
+      color: #e5e7eb;
+      transform: translateY(-0.5px);
+    }
+
+    body.light .search-clear-btn {
+      color: #9ca3af;
+    }
+
+    body.light .search-clear-btn:hover {
+      background: rgba(209, 213, 219, 0.8);
+      color: #4b5563;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .export-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .export-menu {
+      position: absolute;
+      top: 110%;
+      right: 0;
+      background: #020617;
+      border: 1px solid rgba(55, 65, 81, 1);
+      border-radius: 8px;
+      padding: 4px;
+      min-width: 140px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.8);
+      display: none;
+      z-index: 50;
+    }
+
+    .export-menu button {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: #e5e7eb;
+      text-align: left;
+      font-size: 0.9rem;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.12s ease, color 0.12s ease;
+    }
+
+    .export-menu button:hover {
+      background: #111827;
+      color: #f9fafb;
+    }
+
+    body.light .export-menu {
+      background: #ffffff;
+      border-color: #e5e7eb;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    body.light .export-menu button {
+      color: #374151;
+    }
+
+    body.light .export-menu button:hover {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    /* Carpeta tipo acordeón */
+    .folder-item {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      padding: 2px 2px;
+      border-radius: 10px;
+    }
+
+    .folder-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.12s ease;
+    }
+
+    .folder-header-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .folder-caret {
+      font-size: 1.1rem;
+      color: #e5e7eb;
+      flex-shrink: 0;
+    }
+
+    .folder-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .folder-item:hover .folder-header {
+      background: rgba(31, 41, 55, 1);
+      transform: translateY(-1px);
+    }
+
+    .folder-item.active .folder-header {
+      background: #1d4ed8;
+    }
+
+    body.light .folder-item:hover .folder-header {
+      background: #d1d5db;
+      transform: translateY(-1px);
+    }
+
+    body.light .folder-item.active .folder-header {
+      background: #cbd5f5;
+    }
+
+    .folder-prompts {
+      margin-left: 20px;
+      margin-top: 2px;
+      margin-bottom: 4px;
+      padding-left: 4px;
+      display: block;
+    }
+
+    .folder-prompt {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      padding: 2px 0;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .folder-prompt:hover {
+      color: #e5e7eb;
+    }
+
+    body.light .folder-prompt {
+      color: #4b5563;
+    }
+
+    body.light .folder-prompt:hover {
+      color: #111827;
+    }
+
+
+   .topbar-icon-btn {
+      border-radius: 8px;
+      border: 1px solid #70716e;
+      background: #1f201d;
+      color: #e5e7eb;
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      height: 36px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.12s ease, border-color 0.15s ease;
+    }
+
+    .topbar-icon-btn:hover {
+      background: #232520;
+      border-color: #9a9a9a;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .topbar-icon-btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      border-radius: 8px;
+      border: 1px solid #ffffff;
+      background: #ffffff;
+      color: #111827;
+      font-size: 0.98rem;
+      padding: 8px 14px;
+      height: 36px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
+      transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.12s ease, border-color 0.15s ease;
+    }
+
+    .btn-primary:hover {
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.85);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.55);
+    }
+
+    .content {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 0;
+      background: #161614;
+      transition: background 0.2s ease;
+    }
+
+    .content-header {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 500px);
+      gap: 12px;
+      flex: 1;
+      align-content: flex-start;
+      justify-content: flex-start;
+      justify-items: flex-start;
+      transition: grid-template-columns 0.15s ease;
+    }
+
+    .grid.list-view {
+      grid-template-columns: 1fr;
+    }
+    .grid.list-view .card {
+      width: 100%;
+      height: auto;
+    }
+
+    .card {
+      background: #1f201d;
+      border-radius: 12px;
+      border: 1px solid #70716e;
+      padding: 10px 11px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      width: 500px;
+      height: 230px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease, background 0.2s ease;
+    }
+
+    .card.list-card {
+      padding: 8px 10px;
+    }
+
+    .card:hover {
+      border-color: #9a9a9a;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.75);
+      transform: translateY(-1px);
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-header {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #ffffff;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-header-meta {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      font-size: 0.8rem;
+    }
+
+    .attachment-icon {
+      font-size: 1.05rem;
+      opacity: 0.8;
+    }
+
+    .favorite-badge {
+      font-size: 0.75rem;
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(245, 158, 11, 0.9);
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+    }
+
+    .card-body {
+      font-size: 0.9rem;
+      text-align: left;
+      color: #9a9a9a;
+      max-height: 5rem;
+      overflow: hidden;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 4px;
+      font-size: 0.82rem;
+      color: #9ca3af;
+    }
+
+    .card-footer-left {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .card-actions button {
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s ease, transform 0.12s ease;
+    }
+
+    .card-actions button:hover {
+      color: #e5e7eb;
+      transform: translateY(-1px);
+    }
+
+    .card-actions button:active {
+      transform: translateY(0);
+    }
+
+    .copy-count {
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(22, 163, 74, 0.8);
+      color: #bbf7d0;
+      background: rgba(22, 163, 74, 0.12);
+    }
+
+    body.light .copy-count {
+      border-color: #9ca3af;
+      color: #4b5563;
+      background: #e5e7eb;
+    }
+
+    .attachment-pill {
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(59, 130, 246, 0.8);
+      color: #bfdbfe;
+      background: rgba(37, 99, 235, 0.12);
+      margin-left: 0;
+    }
+
+    body.light .attachment-pill {
+      border-color: #1d4ed8;
+      color: #1d4ed8;
+      background: rgba(37, 99, 235, 0.16);
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 8px;
+      font-size: 0.98rem;
+      color: #6b7280;
+      gap: 6px;
+    }
+
+    .empty-icon {
+      font-size: 2rem;
+      opacity: 0.4;
+    }
+
+    /* MODALES GENERALES */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(22, 22, 20, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+    }
+
+    .modal-backdrop.visible {
+      display: flex;
+    }
+
+    .modal {
+      width: min(900px, 100% - 32px);
+      max-height: calc(100vh - 80px);
+      background: #161614;
+      border-radius: 10px;
+      border: 1px solid #70716e;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(4px);
+      transition: transform 0.18s ease;
+    }
+
+    .modal-backdrop.visible .modal {
+      transform: translateY(0);
+    }
+
+    body.light .modal {
+      background: #ffffff;
+      border-color: #e5e7eb;
+    }
+
+    .modal-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(31, 41, 55, 1);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    body.light .modal-header {
+      border-bottom-color: #e5e7eb;
+    }
+
+    .modal-body {
+      padding: 12px 16px 8px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .modal-footer {
+      padding: 10px 16px;
+      border-top: 1px solid rgba(31, 41, 55, 1);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    body.light .modal-footer {
+      border-top-color: #e5e7eb;
+    }
+
+    /* Modal de carpeta un poco más estrecho */
+    .folder-modal {
+      width: min(420px, 100% - 32px);
+      max-height: none;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.8rem;
+    }
+
+    .form-label {
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+
+    body.light .form-label {
+      color: #6b7280;
+    }
+
+    .text-input,
+    .textarea-input {
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #70716e;
+      background: #1f201d;
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      padding: 6px 8px;
+      outline: none;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    body.light .text-input,
+    body.light .textarea-input {
+      background: #f9fafb;
+      border-color: #d1d5db;
+      color: #111827;
+    }
+
+    .text-input:focus,
+    .textarea-input:focus {
+      border-color: #2563eb;
+    }
+
+    .textarea-input {
+      resize: vertical;
+      min-height: 180px;
+      font-family: inherit;
+      line-height: 1.4;
+    }
+
+    .file-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .file-input {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    .file-input button {
+      border-radius: 999px;
+      border: 1px solid rgba(75, 85, 99, 1);
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    body.light .file-input button {
+      background: #f9fafb;
+      border-color: #d1d5db;
+      color: #111827;
+    }
+
+    .file-input button:hover {
+      background: #111827;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .file-input button:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .file-input input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-name {
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+
+    body.light .file-name {
+      color: #6b7280;
+    }
+
+    .file-preview {
+      margin-top: 6px;
+      max-width: 160px;
+      max-height: 120px;
+      border-radius: 6px;
+      border: 1px solid #70716e;
+      object-fit: cover;
+      display: none;
+    }
+
+    body.light .file-preview {
+      border-color: #d1d5db;
+    }
+
+    .btn-ghost {
+      border-radius: 8px;
+      border: 1px solid #70716e;
+      background: #1f201d;
+      color: #e5e7eb;
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      height: 36px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.12s ease, border-color 0.15s ease;
+    }
+
+    .btn-danger {
+      border-color: #7f1d1d;
+      color: #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: #7f1d1d;
+      color: #fef2f2;
+    }
+
+
+    body.light .btn-ghost {
+      background: #f9fafb;
+      border-color: #d1d5db;
+      color: #111827;
+    }
+
+    .btn-ghost:hover {
+      background: #111827;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    /* Paleta de colores para carpetas en el modal */
+    .folder-color-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .folder-color-swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+      background-clip: padding-box;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+    }
+
+    .folder-color-swatch:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.35);
+    }
+
+    .folder-color-swatch.selected {
+      border-color: #ffffff;
+    }
+
+    body.light .folder-color-swatch.selected {
+      border-color: #111827;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+      .app {
+        flex-direction: column;
+      }
+      .topbar {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Carpetas</span>
+        <div class="sidebar-actions">
+          <button class="icon-btn" id="addFolderBtn" title="Nueva carpeta">+</button>
+          <button class="icon-btn" id="renameFolderBtn" title="Renombrar / color carpeta">✏️</button>
+          <button class="icon-btn" id="deleteFolderBtn" title="Eliminar carpeta">🗑</button>
+        </div>
+      </div>
+      <ul class="folder-list" id="folderList"></ul>
+      <div class="sidebar-footer">
+        Las carpetas y prompts se guardan sólo en este navegador.
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="search-wrapper">
+          <span>🔍</span>
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Buscar en esta carpeta..."
+          />
+          <button type="button" id="searchClearBtn" class="search-clear-btn" title="Borrar filtro">✕</button>
+        </div>
+        <div class="topbar-actions">
+          <button class="topbar-icon-btn" type="button" id="viewToggleBtn" title="Cambiar vista">
+            ⧉ Grid
+          </button>
+          <button class="topbar-icon-btn" type="button" id="sortToggleBtn" title="Cambiar orden">
+            ↕ Fecha
+          </button>
+          <button class="topbar-icon-btn" type="button" id="themeToggleBtn" title="Modo claro/oscuro">
+            🌙 Oscuro
+          </button>
+          <div class="export-wrapper">
+            <button class="topbar-icon-btn" type="button" id="exportBtn" title="Exportar biblioteca">
+              ⭳ Exportar
+            </button>
+            <div class="export-menu" id="exportMenu">
+              <button type="button" data-export="json">Exportar JSON</button>
+              <button type="button" data-export="pdf">Exportar PDF</button>
+            </div>
+          </div>
+          <button class="btn-primary" type="button" id="newPromptBtn">
+            + Nuevo Prompt
+          </button>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <section class="content">
+        <div class="content-header" id="folderTitle">Carpeta actual</div>
+        <div class="grid" id="promptGrid"></div>
+        <div class="empty-state" id="emptyState" style="display:none;">
+          <div class="empty-icon">📂</div>
+          <div>Esta carpeta está vacía.</div>
+          <div>Crea un nuevo prompt para empezar.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Import file input -->
+  <input type="file" id="importFileInput" accept="application/json" style="display:none;" />
+
+  <!-- MODAL CARPETA -->
+  <div class="modal-backdrop" id="folderModalBackdrop">
+    <div class="modal folder-modal">
+      <div class="modal-header" id="folderModalTitle">Editar carpeta</div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="folderNameInput">Nombre de la carpeta</label>
+          <input id="folderNameInput" class="text-input" type="text" />
+        </div>
+        <div class="form-group">
+          <span class="form-label">Color de la carpeta</span>
+          <div class="folder-color-grid" id="folderColorGrid"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" id="cancelFolderModalBtn">Cancelar</button>
+        <button type="button" class="btn-primary" id="saveFolderModalBtn">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PROMPT -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <div class="modal-header" id="modalTitle">Nuevo Prompt</div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="promptTitleInput">Título</label>
+          <input id="promptTitleInput" class="text-input" type="text" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="promptTextInput">Texto del Prompt</label>
+          <textarea id="promptTextInput" class="textarea-input"></textarea>
+        </div>
+        <div class="form-group">
+          <span class="form-label">Archivo adjunto (Opcional)</span>
+          <div class="file-row">
+            <div class="file-input">
+              <button type="button">Seleccionar…</button>
+              <input type="file" id="fileInput" />
+            </div>
+            <span class="file-name" id="fileNameLabel">Ningún archivo seleccionado.</span>
+          </div>
+          <img id="filePreview" class="file-preview" alt="Vista previa del adjunto" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" id="cancelModalBtn">Cancelar</button>
+        <button type="button" class="btn-ghost btn-danger" id="deletePromptBtn" style="display:none;">Eliminar</button>
+        <button type="button" class="btn-ghost" id="exportPromptPdfBtn" style="display:none;">Exportar PDF</button>
+        <button type="button" class="btn-primary" id="saveModalBtn">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const PROMPTS_KEY = "uiPromptLibrary_prompts_v1";
+      const FOLDERS_KEY = "uiPromptLibrary_folders_v1";
+      const ACTIVE_FOLDER_KEY = "uiPromptLibrary_activeFolder_v1";
+      const THEME_KEY = "uiPromptLibrary_theme_v1";
+      const SORT_KEY = "uiPromptLibrary_sort_v1"; // "date" | "alpha"
+      const VIEW_KEY = "uiPromptLibrary_view_v1"; // "grid" | "list";
+
+      let folders = [];
+      let prompts = [];
+      let activeFolderId = null;
+      let editingPromptId = null;
+      let editingFolderId = null;
+      let tempFolderColor = null;
+      const folderOpenState = {};
+      let searchTerm = "";
+      let theme = "dark";
+      let sortMode = "date";
+      let viewMode = "grid";
+      let currentAttachmentData = null;
+      let currentAttachmentType = "";
+
+      const folderListEl = document.getElementById("folderList");
+      const folderTitleEl = document.getElementById("folderTitle");
+      const promptGridEl = document.getElementById("promptGrid");
+      const emptyStateEl = document.getElementById("emptyState");
+
+      const searchInput = document.getElementById("searchInput");
+      const searchClearBtn = document.getElementById("searchClearBtn");
+      const newPromptBtn = document.getElementById("newPromptBtn");
+
+      const modalBackdrop = document.getElementById("modalBackdrop");
+      const modalTitleEl = document.getElementById("modalTitle");
+      const promptTitleInput = document.getElementById("promptTitleInput");
+      const promptTextInput = document.getElementById("promptTextInput");
+      const fileInput = document.getElementById("fileInput");
+      const fileNameLabel = document.getElementById("fileNameLabel");
+      const filePreview = document.getElementById("filePreview");
+      const cancelModalBtn = document.getElementById("cancelModalBtn");
+      const saveModalBtn = document.getElementById("saveModalBtn");
+      const deletePromptBtn = document.getElementById("deletePromptBtn");
+      const exportPromptPdfBtn = document.getElementById("exportPromptPdfBtn");
+
+      const addFolderBtn = document.getElementById("addFolderBtn");
+      const renameFolderBtn = document.getElementById("renameFolderBtn");
+      const deleteFolderBtn = document.getElementById("deleteFolderBtn");
+
+      const viewToggleBtn = document.getElementById("viewToggleBtn");
+      const sortToggleBtn = document.getElementById("sortToggleBtn");
+      const themeToggleBtn = document.getElementById("themeToggleBtn");
+      const exportBtn = document.getElementById("exportBtn");
+      const exportMenu = document.getElementById("exportMenu");
+      const importFileInput = document.getElementById("importFileInput");
+
+      const folderModalBackdrop = document.getElementById("folderModalBackdrop");
+      const folderModalTitleEl = document.getElementById("folderModalTitle");
+      const folderNameInput = document.getElementById("folderNameInput");
+      const folderColorGrid = document.getElementById("folderColorGrid");
+      const cancelFolderModalBtn = document.getElementById("cancelFolderModalBtn");
+      const saveFolderModalBtn = document.getElementById("saveFolderModalBtn");
+
+      const folderPalette = [
+        "#167288",
+        "#8cdaec",
+        "#b45248",
+        "#d48c84",
+        "#a89a49",
+        "#d6cfa2",
+        "#3cb464",
+        "#9bddb1",
+        "#643c6a",
+        "#836394"
+      ];
+
+      function randomFolderColor() {
+        return folderPalette[Math.floor(Math.random() * folderPalette.length)];
+      }
+
+      function loadState() {
+        try {
+          const fRaw = localStorage.getItem(FOLDERS_KEY);
+          const pRaw = localStorage.getItem(PROMPTS_KEY);
+          const aRaw = localStorage.getItem(ACTIVE_FOLDER_KEY);
+          const tRaw = localStorage.getItem(THEME_KEY);
+          const sRaw = localStorage.getItem(SORT_KEY);
+          const vRaw = localStorage.getItem(VIEW_KEY);
+
+          if (fRaw) folders = JSON.parse(fRaw) || [];
+          if (pRaw) prompts = JSON.parse(pRaw) || [];
+          if (aRaw) activeFolderId = aRaw;
+          if (tRaw) theme = tRaw === "light" ? "light" : "dark";
+          if (sRaw) sortMode = sRaw === "alpha" ? "alpha" : "date";
+          // ignoramos la vista guardada, siempre arrancamos en grid
+        viewMode = "grid";
+        } catch (e) {
+          console.warn("Error cargando estado", e);
+        }
+
+        if (!Array.isArray(folders) || folders.length === 0) {
+          const defaultFolder = {
+            id: "f-" + Date.now(),
+            name: "General",
+            color: randomFolderColor()
+          };
+          folders = [defaultFolder];
+          activeFolderId = defaultFolder.id;
+          saveFolders();
+        }
+
+        // Asegurar que todas las carpetas tengan color
+        folders.forEach((f) => {
+          if (!f.color) {
+            f.color = randomFolderColor();
+          }
+        });
+
+        if (!activeFolderId || !folders.find((f) => f.id === activeFolderId)) {
+          activeFolderId = folders[0].id;
+        }
+
+        // Asegurar estructura de prompts nueva
+        prompts.forEach((p) => {
+          if (!p.createdAt) {
+            p.createdAt = new Date().toISOString();
+          }
+          if (typeof p.favorite === "undefined") {
+            p.favorite = false;
+          }
+          if (typeof p.copyCount === "undefined") {
+            p.copyCount = 0;
+          }
+        });
+      }
+
+      function saveFolders() {
+        localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
+        localStorage.setItem(ACTIVE_FOLDER_KEY, activeFolderId);
+      }
+
+      function savePrompts() {
+        localStorage.setItem(PROMPTS_KEY, JSON.stringify(prompts));
+      }
+
+      function applyTheme() {
+        const isLight = theme === "light";
+        document.body.classList.toggle("light", isLight);
+        if (themeToggleBtn) {
+          themeToggleBtn.textContent = isLight ? "☀️ Claro" : "🌙 Oscuro";
+        }
+        localStorage.setItem(THEME_KEY, theme);
+      }
+
+      function toggleTheme() {
+        theme = theme === "dark" ? "light" : "dark";
+        applyTheme();
+      }
+
+      function applyViewModeLabel() {
+        if (!viewToggleBtn) return;
+        viewToggleBtn.textContent = viewMode === "list" ? "⧉ Grid" : "☰ Lista";
+      }
+
+      function toggleViewMode() {
+        viewMode = viewMode === "grid" ? "list" : "grid";
+        localStorage.setItem(VIEW_KEY, viewMode);
+        applyViewModeLabel();
+        renderPrompts();
+      }
+
+      function applySortModeLabel() {
+        if (!sortToggleBtn) return;
+        sortToggleBtn.textContent = sortMode === "date" ? "↕ Fecha" : "A–Z";
+      }
+
+      function toggleSortMode() {
+        sortMode = sortMode === "date" ? "alpha" : "date";
+        localStorage.setItem(SORT_KEY, sortMode);
+        applySortModeLabel();
+        renderPrompts();
+      }
+
+      function formatCopyLabel(n) {
+        if (!n || n === 0) return "Aún sin copias";
+        if (n === 1) return "Copiado 1 vez";
+        return "Copiado " + n + " veces";
+      }
+
+      function renderFolders() {
+        folderListEl.innerHTML = "";
+        folders.forEach((folder) => {
+          const li = document.createElement("li");
+          li.className =
+            "folder-item" + (folder.id === activeFolderId ? " active" : "");
+          li.dataset.id = folder.id;
+
+          const isOpen = folderOpenState[folder.id] !== false;
+
+          const header = document.createElement("div");
+          header.className = "folder-header";
+
+          const headerLeft = document.createElement("div");
+          headerLeft.className = "folder-header-left";
+
+          const caret = document.createElement("span");
+          caret.className = "folder-caret";
+          caret.textContent = isOpen ? "▾" : "▸";
+
+          const label = document.createElement("div");
+          label.className = "folder-label";
+
+          const dot = document.createElement("div");
+          dot.className = "folder-dot";
+          dot.style.background = folder.color || "#6366f1";
+
+          const name = document.createElement("div");
+          name.className = "folder-name";
+          name.textContent = folder.name;
+
+          label.appendChild(dot);
+          label.appendChild(name);
+
+          headerLeft.appendChild(caret);
+          headerLeft.appendChild(label);
+
+          const buttons = document.createElement("div");
+          buttons.className = "folder-item-buttons";
+
+          const editBtn = document.createElement("button");
+          editBtn.type = "button";
+          editBtn.textContent = "✏️";
+          editBtn.title = "Renombrar / cambiar color";
+          editBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            openFolderModal(folder.id);
+          });
+
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.textContent = "🗑";
+          delBtn.title = "Eliminar carpeta";
+          delBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            deleteFolder(folder.id);
+          });
+
+          buttons.appendChild(editBtn);
+          if (folders.length > 1) buttons.appendChild(delBtn);
+
+          header.appendChild(headerLeft);
+          header.appendChild(buttons);
+
+          caret.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const currentlyOpen = folderOpenState[folder.id] !== false;
+            folderOpenState[folder.id] = !currentlyOpen;
+            renderFolders();
+          });
+
+          header.addEventListener("click", () => {
+            activeFolderId = folder.id;
+            saveFolders();
+            renderFolders();
+            renderPrompts();
+          });
+
+          li.appendChild(header);
+
+          const promptsContainer = document.createElement("div");
+          promptsContainer.className = "folder-prompts";
+          promptsContainer.style.display = isOpen ? "block" : "none";
+
+          const folderPrompts = prompts.filter((p) => p.folderId === folder.id);
+          folderPrompts.forEach((p) => {
+            const pEl = document.createElement("div");
+            pEl.className = "folder-prompt";
+            pEl.textContent = p.title || "(Sin título)";
+            pEl.addEventListener("click", (e) => {
+              e.stopPropagation();
+              activeFolderId = folder.id;
+              saveFolders();
+              renderFolders();
+              renderPrompts();
+              openEditPrompt(p.id);
+            });
+            promptsContainer.appendChild(pEl);
+          });
+
+          if (folderPrompts.length > 0) {
+            li.appendChild(promptsContainer);
+          }
+
+          folderListEl.appendChild(li);
+        });
+
+        const current = folders.find((f) => f.id === activeFolderId);
+        folderTitleEl.textContent = current ? current.name : "Carpeta";
+      }
+
+      function sortPromptsList(list) {
+        // Favoritos primero
+        list.sort((a, b) => {
+          const fa = a.favorite ? 1 : 0;
+          const fb = b.favorite ? 1 : 0;
+          if (fa !== fb) return fb - fa; // favorito arriba
+
+          if (sortMode === "alpha") {
+            const ta = (a.title || "").toLowerCase();
+            const tb = (b.title || "").toLowerCase();
+            if (ta < tb) return -1;
+            if (ta > tb) return 1;
+            return 0;
+          } else {
+            const da = a.createdAt ? Date.parse(a.createdAt) : 0;
+            const db = b.createdAt ? Date.parse(b.createdAt) : 0;
+            return db - da; // más nuevo primero
+          }
+        });
+      }
+
+      function renderPrompts() {
+        promptGridEl.innerHTML = "";
+        promptGridEl.classList.toggle("list-view", viewMode === "list");
+
+        let filtered = prompts.filter((p) => p.folderId === activeFolderId);
+
+        if (searchTerm) {
+          const t = searchTerm.toLowerCase();
+          filtered = filtered.filter(
+            (p) =>
+              (p.title && p.title.toLowerCase().includes(t)) ||
+              (p.text && p.text.toLowerCase().includes(t))
+          );
+        }
+
+        sortPromptsList(filtered);
+
+        if (filtered.length === 0) {
+          emptyStateEl.style.display = "flex";
+        } else {
+          emptyStateEl.style.display = "none";
+        }
+
+        filtered.forEach((prompt) => {
+          const card = document.createElement("article");
+          card.className = "card";
+          if (viewMode === "list") {
+            card.classList.add("list-card");
+          }
+
+          // Al hacer clic en toda la tarjeta, abrimos el editor
+          card.addEventListener("click", () => {
+            openEditPrompt(prompt.id);
+          });
+
+          const headerRow = document.createElement("div");
+          headerRow.className = "card-header-row";
+
+          const header = document.createElement("div");
+          header.className = "card-header";
+          header.textContent = prompt.title || "(Sin título)";
+
+          const headerMeta = document.createElement("div");
+          headerMeta.className = "card-header-meta";
+
+          if (prompt.attachmentName) {
+            const icon = document.createElement("span");
+            icon.className = "attachment-icon";
+            icon.textContent = "📎";
+            headerMeta.appendChild(icon);
+          }
+
+          if (prompt.favorite) {
+            const favBadge = document.createElement("span");
+            favBadge.className = "favorite-badge";
+            favBadge.textContent = "⭐ Favorito";
+            headerMeta.appendChild(favBadge);
+          }
+
+          headerRow.appendChild(header);
+          headerRow.appendChild(headerMeta);
+
+          const body = document.createElement("div");
+          body.className = "card-body";
+          body.textContent = prompt.text || "";
+
+          const footer = document.createElement("div");
+          footer.className = "card-footer";
+
+          const left = document.createElement("div");
+          left.className = "card-footer-left";
+
+          const copyCountSpan = document.createElement("span");
+          copyCountSpan.className = "copy-count";
+          copyCountSpan.textContent = formatCopyLabel(prompt.copyCount || 0);
+          left.appendChild(copyCountSpan);
+
+          if (prompt.attachmentName) {
+            const att = document.createElement("span");
+            att.className = "attachment-pill";
+            att.textContent = "📎 " + prompt.attachmentName;
+            left.appendChild(att);
+          }
+
+          const actions = document.createElement("div");
+          actions.className = "card-actions";
+
+          const favBtn = document.createElement("button");
+          favBtn.type = "button";
+          favBtn.title = "Marcar como favorito";
+          favBtn.textContent = prompt.favorite ? "⭐" : "☆";
+          favBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleFavorite(prompt.id);
+          });
+
+          const copyBtn = document.createElement("button");
+          copyBtn.type = "button";
+          copyBtn.title = "Copiar prompt";
+          copyBtn.textContent = "⧠";
+          copyBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            handleCopyPrompt(prompt.id);
+          });
+
+          const duplicateBtn = document.createElement("button");
+          duplicateBtn.type = "button";
+          duplicateBtn.title = "Duplicar prompt";
+          duplicateBtn.textContent = "⧉";
+          duplicateBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            duplicatePrompt(prompt.id);
+          });
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.type = "button";
+          deleteBtn.title = "Eliminar prompt";
+          deleteBtn.textContent = "🗑";
+          deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            deletePrompt(prompt.id);
+          });
+
+          actions.appendChild(favBtn);
+          actions.appendChild(copyBtn);
+          actions.appendChild(duplicateBtn);
+          actions.appendChild(deleteBtn);
+
+          footer.appendChild(left);
+          footer.appendChild(actions);
+
+          card.appendChild(headerRow);
+          card.appendChild(body);
+          card.appendChild(footer);
+
+          promptGridEl.appendChild(card);
+        });
+
+        applyViewModeLabel();
+        applySortModeLabel();
+      }
+
+async function handleCopyPrompt(id) {
+        const p = prompts.find((x) => x.id === id);
+        if (!p) return;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(p.text || "");
+          } else {
+            const ta = document.createElement("textarea");
+            ta.value = p.text || "";
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+          }
+          p.copyCount = (p.copyCount || 0) + 1;
+          savePrompts();
+          renderPrompts();
+        } catch (e) {
+          alert("No se ha podido copiar el texto (revisa permisos del navegador).");
+        }
+      }
+
+      function duplicatePrompt(id) {
+        const idx = prompts.findIndex((x) => x.id === id);
+        if (idx === -1) return;
+        const p = prompts[idx];
+        const clone = {
+          id: "p-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+          folderId: p.folderId,
+          title: (p.title || "(Sin título)") + " (copia)",
+          text: p.text || "",
+          copyCount: 0,
+          createdAt: p.createdAt || new Date().toISOString(),
+          attachmentName: p.attachmentName || null,
+          favorite: p.favorite || false
+        };
+        prompts.splice(idx + 1, 0, clone);
+        savePrompts();
+        renderPrompts();
+      }
+
+      function toggleFavorite(id) {
+        const p = prompts.find((x) => x.id === id);
+        if (!p) return;
+        p.favorite = !p.favorite;
+        savePrompts();
+        renderPrompts();
+      }
+
+      function deletePrompt(id) {
+        const p = prompts.find((x) => x.id === id);
+        if (!p) return;
+        const ok = window.confirm(
+          "¿Seguro que quieres eliminar este prompt?\n\n" + (p.title || "")
+        );
+        if (!ok) return;
+        prompts = prompts.filter((x) => x.id !== id);
+        savePrompts();
+        renderPrompts();
+        if (modalBackdrop.classList.contains("visible") && editingPromptId === id) {
+          closePromptModal();
+        }
+      }
+
+      function openNewPrompt() {
+        editingPromptId = null;
+        modalTitleEl.textContent = "Nuevo Prompt";
+        promptTitleInput.value = "";
+        promptTextInput.value = "";
+        fileInput.value = "";
+        fileNameLabel.textContent = "Ningún archivo seleccionado.";
+        fileNameLabel.dataset.storedName = "";
+        currentAttachmentData = null;
+        currentAttachmentType = "";
+        if (filePreview) {
+          filePreview.style.display = "none";
+          filePreview.removeAttribute("src");
+        }
+        if (deletePromptBtn) {
+          deletePromptBtn.style.display = "none";
+        }
+        if (exportPromptPdfBtn) {
+          exportPromptPdfBtn.style.display = "none";
+        }
+        modalBackdrop.classList.add("visible");
+        promptTitleInput.focus();
+      }
+
+      function openEditPrompt(id) {
+        const p = prompts.find((x) => x.id === id);
+        if (!p) return;
+        editingPromptId = id;
+        modalTitleEl.textContent = "Editar Prompt";
+        promptTitleInput.value = p.title || "";
+        promptTextInput.value = p.text || "";
+        fileInput.value = "";
+        fileNameLabel.textContent =
+          p.attachmentName || "Ningún archivo seleccionado.";
+        fileNameLabel.dataset.storedName = p.attachmentName || "";
+        currentAttachmentData = null;
+        currentAttachmentType = "";
+        if (filePreview) {
+          filePreview.style.display = "none";
+          filePreview.removeAttribute("src");
+        }
+        if (deletePromptBtn) {
+          deletePromptBtn.style.display = "inline-flex";
+        }
+        if (exportPromptPdfBtn) {
+          exportPromptPdfBtn.style.display = "inline-flex";
+        }
+        modalBackdrop.classList.add("visible");
+        promptTitleInput.focus();
+      }
+
+      function closePromptModal() {
+        modalBackdrop.classList.remove("visible");
+        editingPromptId = null;
+      }
+
+      function savePromptFromModal() {
+        const title = (promptTitleInput.value || "").trim();
+        const text = (promptTextInput.value || "").trim();
+        const file = fileInput.files && fileInput.files[0];
+        const fileName = file ? file.name : (fileNameLabel.dataset.storedName || "");
+
+        if (!text) {
+          alert("El texto del prompt no puede estar vacío.");
+          return;
+        }
+
+        if (editingPromptId) {
+          const p = prompts.find((x) => x.id === editingPromptId);
+          if (!p) return;
+          p.title = title || "(Sin título)";
+          p.text = text;
+          if (file) {
+            p.attachmentName = fileName || null;
+            p.attachmentData = currentAttachmentData || null;
+            p.attachmentType = currentAttachmentType || (file && file.type) || null;
+          } else if (!fileName) {
+            p.attachmentName = null;
+            p.attachmentData = null;
+            p.attachmentType = null;
+          }
+        } else {
+          const newPrompt = {
+            id: "p-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+            folderId: activeFolderId,
+            title: title || "(Sin título)",
+            text: text,
+            copyCount: 0,
+            createdAt: new Date().toISOString(),
+            attachmentName: fileName || null,
+            attachmentData: currentAttachmentData || null,
+            attachmentType: currentAttachmentType || (file && file.type) || null,
+            favorite: false
+          };
+          prompts.unshift(newPrompt);
+        }
+
+        savePrompts();
+        closePromptModal();
+        renderPrompts();
+      }
+
+      function openNewFolderModal() {
+        editingFolderId = null;
+        folderModalTitleEl.textContent = "Nueva carpeta";
+        folderNameInput.value = "";
+        tempFolderColor = randomFolderColor();
+        renderFolderColorGrid();
+        folderModalBackdrop.classList.add("visible");
+        folderNameInput.focus();
+      }
+
+      function addFolder() {
+        // Ahora usamos el modal de carpeta en lugar de prompts nativos
+        openNewFolderModal();
+      }
+
+      function openFolderModal(id) {
+        const folder = folders.find((f) => f.id === id);
+        if (!folder) return;
+        editingFolderId = folder.id;
+        folderModalTitleEl.textContent = "Editar carpeta";
+        folderNameInput.value = folder.name || "";
+        tempFolderColor = folder.color || randomFolderColor();
+        renderFolderColorGrid();
+        folderModalBackdrop.classList.add("visible");
+        folderNameInput.focus();
+      }
+
+      function renderFolderColorGrid() {
+        folderColorGrid.innerHTML = "";
+        folderPalette.forEach((color) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "folder-color-swatch";
+          btn.style.background = color;
+          if (color === tempFolderColor) {
+            btn.classList.add("selected");
+          }
+          btn.addEventListener("click", () => {
+            tempFolderColor = color;
+            renderFolderColorGrid();
+          });
+          folderColorGrid.appendChild(btn);
+        });
+      }
+
+      function closeFolderModal() {
+        folderModalBackdrop.classList.remove("visible");
+        editingFolderId = null;
+        tempFolderColor = null;
+      }
+
+      function saveFolderFromModal() {
+        const nameRaw = (folderNameInput.value || "").trim();
+        if (!nameRaw) {
+          alert("El nombre de la carpeta no puede estar vacío.");
+          return;
+        }
+
+        // Crear nueva carpeta
+        if (!editingFolderId) {
+          const f = {
+            id: "f-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+            name: nameRaw,
+            color: tempFolderColor || randomFolderColor()
+          };
+          folders.push(f);
+          activeFolderId = f.id;
+          saveFolders();
+          renderFolders();
+          renderPrompts();
+          closeFolderModal();
+          return;
+        }
+
+        // Editar carpeta existente
+        const folder = folders.find((f) => f.id === editingFolderId);
+        if (!folder) {
+          closeFolderModal();
+          return;
+        }
+        folder.name = nameRaw;
+        if (tempFolderColor) {
+          folder.color = tempFolderColor;
+        }
+        saveFolders();
+        renderFolders();
+        closeFolderModal();
+      }
+
+      function deleteFolder(id) {
+        if (folders.length <= 1) {
+          alert("Debe existir al menos una carpeta.");
+          return;
+        }
+        const folder = folders.find((f) => f.id === id);
+        if (!folder) return;
+        const ok = window.confirm(
+          "¿Eliminar la carpeta \"" +
+            folder.name +
+            "\" y todos sus prompts?"
+        );
+        if (!ok) return;
+        prompts = prompts.filter((p) => p.folderId !== id);
+        folders = folders.filter((f) => f.id !== id);
+        if (!folders.length) {
+          const defaultFolder = {
+            id: "f-" + Date.now(),
+            name: "General",
+            color: randomFolderColor()
+          };
+          folders = [defaultFolder];
+        }
+        activeFolderId = folders[0].id;
+        saveFolders();
+        savePrompts();
+        renderFolders();
+        renderPrompts();
+      }
+
+      function handleExportJSON() {
+        const data = {
+          version: 2,
+          folders,
+          prompts,
+          activeFolderId,
+          theme,
+          sortMode,
+          viewMode
+        };
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const date = new Date().toISOString().slice(0, 10);
+        a.href = url;
+        a.download = "biblioteca_prompts_" + date + ".json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function handleExportPDF() {
+        const win = window.open("", "_blank");
+        if (!win) {
+          alert("Por favor, permite las ventanas emergentes para exportar a PDF.");
+          return;
+        }
+        const doc = win.document;
+        let html = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Biblioteca de Prompts</title>";
+        html += "<style>";
+        html += "body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:12px;color:#111827;margin:24px;}";
+        html += "h1{font-size:20px;margin-bottom:12px;}h2{font-size:16px;margin-top:18px;margin-bottom:6px;border-bottom:1px solid #e5e7eb;padding-bottom:2px;}";
+        html += "h3{font-size:13px;margin:8px 0 2px;}pre{white-space:pre-wrap;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:6px;font-size:11px;}";
+        html += "ul{margin:0 0 4px 18px;padding:0;}li{margin-bottom:10px;}";
+        html += "em{color:#6b7280;font-size:11px;}";
+        html += "</style></head><body>";
+        html += "<h1>Biblioteca de Prompts</h1>";
+
+        folders.forEach((folder) => {
+          html += "<h2>" + escapeHtml(folder.name || "Carpeta") + "</h2>";
+          const fps = prompts.filter((p) => p.folderId === folder.id);
+          if (!fps.length) {
+            html += "<p><em>Sin prompts en esta carpeta.</em></p>";
+            return;
+          }
+          html += "<ul>";
+          fps.forEach((p) => {
+            html += "<li>";
+            html += "<h3>" + escapeHtml(p.title || "(Sin título)") + "</h3>";
+            if (p.text) {
+              html += "<pre>" + escapeHtml(p.text) + "</pre>";
+            }
+            if (p.attachmentName) {
+              html += "<p><em>Adjunto: " + escapeHtml(p.attachmentName) + "</em></p>";
+            }
+            html += "</li>";
+          });
+          html += "</ul>";
+        });
+
+        html += "</body></html>";
+        doc.open();
+        doc.write(html);
+        doc.close();
+        win.focus();
+        win.print();
+      }
+
+function exportSinglePrompt(id) {
+        const prompt = prompts.find((p) => p.id === id);
+        if (!prompt) return;
+        const folder = folders.find((f) => f.id === prompt.folderId);
+        const win = window.open("", "_blank");
+        if (!win) {
+          alert("Por favor, permite las ventanas emergentes para exportar a PDF.");
+          return;
+        }
+        const doc = win.document;
+        let html = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Prompt - " + escapeHtml(prompt.title || "") + "</title>";
+        html += "<style>";
+        html += "body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:12px;color:#111827;margin:24px;}";
+        html += "h1{font-size:20px;margin-bottom:8px;}h2{font-size:13px;margin-top:0;margin-bottom:12px;color:#6b7280;}";
+        html += "pre{white-space:pre-wrap;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:8px;font-size:11px;}";
+        html += "p{margin:4px 0;font-size:11px;color:#374151;}";
+        html += "em{color:#6b7280;font-size:11px;}";
+        html += "</style></head><body>";
+        html += "<h1>" + escapeHtml(prompt.title || "(Sin título)") + "</h1>";
+        if (folder) {
+          html += "<h2>Carpeta: " + escapeHtml(folder.name || "") + "</h2>";
+        }
+        if (prompt.text) {
+          html += "<pre>" + escapeHtml(prompt.text) + "</pre>";
+        } else {
+          html += "<p><em>Sin texto definido.</em></p>";
+        }
+        if (prompt.attachmentName) {
+          html += "<p><em>Adjunto: " + escapeHtml(prompt.attachmentName) + "</em></p>";
+        }
+        html += "</body></html>";
+        doc.open();
+        doc.write(html);
+        doc.close();
+        win.focus();
+        win.print();
+      }
+
+
+
+      function handleImportFile(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (!data || !Array.isArray(data.folders) || !Array.isArray(data.prompts)) {
+              alert("Archivo JSON no válido.");
+              return;
+            }
+            folders = data.folders;
+            prompts = data.prompts;
+            activeFolderId = data.activeFolderId || (folders[0] && folders[0].id);
+            theme = data.theme === "light" ? "light" : "dark";
+            sortMode = data.sortMode === "alpha" ? "alpha" : "date";
+            viewMode = data.viewMode === "list" ? "list" : "grid";
+
+            folders.forEach((f) => {
+              if (!f.color) f.color = randomFolderColor();
+            });
+            prompts.forEach((p) => {
+              if (!p.createdAt) p.createdAt = new Date().toISOString();
+              if (typeof p.favorite === "undefined") p.favorite = false;
+              if (typeof p.copyCount === "undefined") p.copyCount = 0;
+            });
+
+            saveFolders();
+            savePrompts();
+            localStorage.setItem(THEME_KEY, theme);
+            localStorage.setItem(SORT_KEY, sortMode);
+            localStorage.setItem(VIEW_KEY, viewMode);
+
+            applyTheme();
+            renderFolders();
+            renderPrompts();
+          } catch (err) {
+            console.error(err);
+            alert("Error leyendo el archivo JSON.");
+          }
+        };
+        reader.readAsText(file);
+        importFileInput.value = "";
+      }
+
+      // EVENTOS
+
+      newPromptBtn.addEventListener("click", openNewPrompt);
+      cancelModalBtn.addEventListener("click", closePromptModal);
+      saveModalBtn.addEventListener("click", savePromptFromModal);
+      if (deletePromptBtn) {
+        deletePromptBtn.addEventListener("click", () => {
+          if (!editingPromptId) return;
+          deletePrompt(editingPromptId);
+        });
+      }
+      if (exportPromptPdfBtn) {
+        exportPromptPdfBtn.addEventListener("click", () => {
+          if (!editingPromptId) return;
+          exportSinglePrompt(editingPromptId);
+        });
+      }
+
+
+      cancelFolderModalBtn.addEventListener("click", closeFolderModal);
+      saveFolderModalBtn.addEventListener("click", saveFolderFromModal);
+
+
+      modalBackdrop.addEventListener("click", (e) => {
+        if (e.target === modalBackdrop) closePromptModal();
+      });
+
+      folderModalBackdrop.addEventListener("click", (e) => {
+        if (e.target === folderModalBackdrop) closeFolderModal();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (modalBackdrop.classList.contains("visible")) {
+            closePromptModal();
+          }
+          if (folderModalBackdrop.classList.contains("visible")) {
+            closeFolderModal();
+          }
+        }
+      });
+
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files && fileInput.files[0];
+        if (file) {
+          fileNameLabel.textContent = file.name;
+          fileNameLabel.dataset.storedName = file.name;
+          currentAttachmentType = file.type || "";
+          if (filePreview) {
+            if (file.type && file.type.startsWith("image/")) {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                const result = e.target.result;
+                filePreview.src = result;
+                filePreview.style.display = "block";
+                currentAttachmentData = result;
+              };
+              reader.readAsDataURL(file);
+            } else {
+              filePreview.style.display = "none";
+              filePreview.removeAttribute("src");
+              currentAttachmentData = null;
+            }
+          } else {
+            currentAttachmentData = null;
+          }
+        } else {
+          fileNameLabel.textContent = "Ningún archivo seleccionado.";
+          fileNameLabel.dataset.storedName = "";
+          if (filePreview) {
+            filePreview.style.display = "none";
+            filePreview.removeAttribute("src");
+          }
+          currentAttachmentData = null;
+          currentAttachmentType = "";
+        }
+      });
+
+      searchInput.addEventListener("input", (e) => {
+        searchTerm = (e.target.value || "").trim().toLowerCase();
+        if (searchClearBtn) {
+          searchClearBtn.style.visibility = searchTerm ? "visible" : "hidden";
+        }
+        renderPrompts();
+      });
+
+      if (searchClearBtn) {
+        searchClearBtn.addEventListener("click", () => {
+          searchTerm = "";
+          searchInput.value = "";
+          searchClearBtn.style.visibility = "hidden";
+          renderPrompts();
+          searchInput.focus();
+        });
+      }
+
+
+      addFolderBtn.addEventListener("click", addFolder);
+      renameFolderBtn.addEventListener("click", () => {
+        if (!activeFolderId) return;
+        openFolderModal(activeFolderId);
+      });
+      deleteFolderBtn.addEventListener("click", () => {
+        if (!activeFolderId) return;
+        deleteFolder(activeFolderId);
+      });
+
+      if (viewToggleBtn) {
+        viewToggleBtn.addEventListener("click", toggleViewMode);
+      }
+      if (sortToggleBtn) {
+        sortToggleBtn.addEventListener("click", toggleSortMode);
+      }
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener("click", toggleTheme);
+      }
+      if (exportBtn && exportMenu) {
+        exportBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isVisible = exportMenu.style.display === "block";
+          exportMenu.style.display = isVisible ? "none" : "block";
+        });
+
+        exportMenu.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const target = e.target;
+          if (!target || !target.dataset) return;
+          if (target.dataset.export === "json") {
+            handleExportJSON();
+          } else if (target.dataset.export === "pdf") {
+            handleExportPDF();
+          }
+          exportMenu.style.display = "none";
+        });
+
+        document.addEventListener("click", () => {
+          exportMenu.style.display = "none";
+        });
+      }
+      // INIT
+      loadState();
+      applyTheme();
+      renderFolders();
+      renderPrompts();
+    })();
+  </script>
+</body>
+</html>
+
+      function handleExportSinglePrompt(id) {
+        const p = prompts.find((x) => x.id === id);
+        if (!p) return;
+        const folder = folders.find((f) => f.id === p.folderId);
+
+        const win = window.open("", "_blank");
+        if (!win) {
+          alert("Por favor, permite las ventanas emergentes para exportar a PDF.");
+          return;
+        }
+        const doc = win.document;
+        let htmlOut = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>" +
+          escapeHtml(p.title || "Prompt") + "</title>";
+        htmlOut += "<style>";
+        htmlOut += "body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:12px;color:#111827;margin:24px;}";
+        htmlOut += "h1{font-size:20px;margin-bottom:6px;}h2{font-size:13px;margin:0 0 12px;color:#6b7280;}";
+        htmlOut += "pre{white-space:pre-wrap;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:8px;font-size:11px;}";
+        htmlOut += "p{margin:4px 0;font-size:11px;color:#4b5563;}";
+        htmlOut += "</style></head><body>";
+
+        htmlOut += "<h1>" + escapeHtml(p.title || "(Sin título)") + "</h1>";
+        if (folder) {
+          htmlOut += "<h2>Carpeta: " + escapeHtml(folder.name || "") + "</h2>";
+        }
+        if (p.text) {
+          htmlOut += "<pre>" + escapeHtml(p.text) + "</pre>";
+        }
+        if (p.attachmentName) {
+          htmlOut += "<p>Adjunto: " + escapeHtml(p.attachmentName) + "</p>";
+          if (p.attachmentData && p.attachmentType && p.attachmentType.startsWith("image/")) {
+            htmlOut += "<div style='margin:4px 0 8px;'><img src='" + p.attachmentData + "' style='max-width:260px;max-height:180px;border-radius:6px;border:1px solid #e5e7eb;' /></div>";
+          }
+        }
+
+        htmlOut += "</body></html>";
+        doc.open();
+        doc.write(htmlOut);
+        doc.close();
+        win.focus();
+        win.print();
+      }
+
