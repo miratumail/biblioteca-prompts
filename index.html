@@ -2223,49 +2223,6 @@ function exportSinglePrompt(id) {
       renderFolders();
       renderPrompts();
     })();
-  </script>
+   </script>
 </body>
 </html>
-
-      function handleExportSinglePrompt(id) {
-        const p = prompts.find((x) => x.id === id);
-        if (!p) return;
-        const folder = folders.find((f) => f.id === p.folderId);
-
-        const win = window.open("", "_blank");
-        if (!win) {
-          alert("Por favor, permite las ventanas emergentes para exportar a PDF.");
-          return;
-        }
-        const doc = win.document;
-        let htmlOut = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>" +
-          escapeHtml(p.title || "Prompt") + "</title>";
-        htmlOut += "<style>";
-        htmlOut += "body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:12px;color:#111827;margin:24px;}";
-        htmlOut += "h1{font-size:20px;margin-bottom:6px;}h2{font-size:13px;margin:0 0 12px;color:#6b7280;}";
-        htmlOut += "pre{white-space:pre-wrap;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:8px;font-size:11px;}";
-        htmlOut += "p{margin:4px 0;font-size:11px;color:#4b5563;}";
-        htmlOut += "</style></head><body>";
-
-        htmlOut += "<h1>" + escapeHtml(p.title || "(Sin título)") + "</h1>";
-        if (folder) {
-          htmlOut += "<h2>Carpeta: " + escapeHtml(folder.name || "") + "</h2>";
-        }
-        if (p.text) {
-          htmlOut += "<pre>" + escapeHtml(p.text) + "</pre>";
-        }
-        if (p.attachmentName) {
-          htmlOut += "<p>Adjunto: " + escapeHtml(p.attachmentName) + "</p>";
-          if (p.attachmentData && p.attachmentType && p.attachmentType.startsWith("image/")) {
-            htmlOut += "<div style='margin:4px 0 8px;'><img src='" + p.attachmentData + "' style='max-width:260px;max-height:180px;border-radius:6px;border:1px solid #e5e7eb;' /></div>";
-          }
-        }
-
-        htmlOut += "</body></html>";
-        doc.open();
-        doc.write(htmlOut);
-        doc.close();
-        win.focus();
-        win.print();
-      }
-
